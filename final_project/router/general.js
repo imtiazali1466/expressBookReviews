@@ -52,12 +52,9 @@ public_users.get("/title/:title", function (req, res) {
 
 //  Get book review
 public_users.get("/review/:isbn", function (req, res) {
-  //Write your code here
   const isbn = req.params.isbn;
-  const filteredBook = books.filter((book) => {
-    book.isbn === isbn;
-  });
-  return res.status(300).json(filteredBook);
+  const bookReviews = books[isbn].reviews;
+  return res.status(200).json(bookReviews);
 });
 
 export default public_users;
