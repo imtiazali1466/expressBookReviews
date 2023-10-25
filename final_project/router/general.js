@@ -1,22 +1,33 @@
 import express from "express";
 import books from "./booksdb.js";
-import isValid from "./auth_users.js";
-import users from "./auth_users.js";
 
 const public_users = express.Router();
 
+let users = [
+  { username: "abc", password: "abc124" },
+  { username: "def", password: "def124" },
+];
+
 public_users.post("/register", (req, res) => {
-  //Write your code here
-  const { username, password } = req.body;
+  const username = req.body.username
+  const password = req.body.password
+  
+  const isValid = (username) => {
+    let userWithSameName = users.find((user) => {
+      user.username === username;
+    });
+    return userWithSameName? true : false;
+  };
+
   if (username && password) {
-    if (!isValid) {
+    if (!isValid(username)) {
       users.push({ username: username, password: password });
-      return res.status(300).json({ message: "user added" });
+      return res.status(200).json({ message: "user registered." });
     } else {
-      return res.status(404).json({ message: "user already resgistered!" });
+      return res.status(404).json({ message: "user already resgistered." })
     }
   } else {
-    return res.status(404).json({ message: "provide username and password" });
+    return res.status(404).json({ message: "Provide username and password" });
   }
 });
 
