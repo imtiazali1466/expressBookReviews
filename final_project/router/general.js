@@ -3,7 +3,7 @@ import books from "./booksdb.js";
 
 const public_users = express.Router();
 
-let users = [
+export let users = [
   { username: "abc", password: "abc124" },
   { username: "def", password: "def124" },
 ];
@@ -16,7 +16,7 @@ public_users.post("/register", (req, res) => {
     let userWithSameName = users.find((user) => {
       user.username === username;
     });
-    return userWithSameName? true : false;
+    return userWithSameName>0? true : false;
   };
 
   if (username && password) {

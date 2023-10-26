@@ -1,41 +1,43 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import books from "./booksdb.js";
+// import { users } from "./general.js";
 
 const regd_users = express.Router();
 
+let users = [
+  { username: "abc", password: "abc123" },
+  { username: "def", password: "def123" },
+];
 
 const authenticatedUser = (username, password) => {
-  //returns boolean
-  //write code to check if username and password match the one we have in records.
-  let validUser = users.filter((user) => {
-    return user.username === username && user.password === password;
-  });
-  if (validUser > 0) {
-    return true;
-  } else {
-    return false;
-  }
+  const validUser = users.find(
+    (user) => user.username === username && user.password === password
+  );
+  return validUser ? true : false;
 };
 
 //only registered users can login
 regd_users.post("/login", (req, res) => {
   //Write your code here
   const { username, password } = req.body;
+
   if (!username || !password) {
     return res.status(404).json({ message: "provide uername and password!" });
-  }
-  if (authenticatedUser(username, password)) {
-    let acessToken = jwt.sign({ data: password }, "secret", {
-      expiresIn: 60 * 60,
-    });
-    req.session.authorization = {
-      acessToken,
-      username,
-    };
-    return res.status(200).json({ message: "user sucessfuly logged in!" });
   } else {
-    res.status(208).json({ message: "incorrect username and password!" });
+    if (authenticatedUser(username, password)) {
+      // console.log(authenticatedUser(username, password));
+      let acessToken = jwt.sign({ data: password }, "secret", {
+        expiresIn: 60 * 60,
+      });
+      req.session.authorization = {
+        acessToken,
+        username,
+      };
+      return res.status(200).json({ message: "user sucessfuly logged in!" });
+    } else {
+      res.status(208).json({ message: "incorrect username and password!" });
+    }
   }
 });
 
