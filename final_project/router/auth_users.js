@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import books from "./booksdb.js";
+// import books from "./booksdb.js";
 // import { users } from "./general.js";
 
 const regd_users = express.Router();
@@ -9,6 +9,11 @@ let users = [
   { username: "abc", password: "abc123" },
   { username: "def", password: "def123" },
 ];
+
+let books = {
+  1: { author: "Chinua Achebe", title: "Things Fall Apart", reviews: [] },
+  2: { author: "Hans Christian Andersen", title: "Fairy tales", reviews: [] },
+};
 
 const authenticatedUser = (username, password) => {
   const validUser = users.find(
@@ -34,6 +39,7 @@ regd_users.post("/login", (req, res) => {
         acessToken,
         username,
       };
+      console.log(req.session.authorization);
       return res.status(200).json({ message: "user sucessfuly logged in!" });
     } else {
       res.status(208).json({ message: "incorrect username and password!" });
@@ -41,16 +47,27 @@ regd_users.post("/login", (req, res) => {
   }
 });
 
+
+regd_users.get("/books", (req, res)=>{
+  res.status(200).json({message : "a message form this endpoint"})
+})
+
 // Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
+regd_users.put("/review/:isbn", (req, res) => {
   //Write your code here
-  const isbn = req.params.isbn;
+  const isbn = parseInt(req.params.isbn);
   const review = req.body.review;
-  const selectedBook = books.filter((book) => {
+  console.log(isbn + review);
+
+  const selectedBook = books.find((book) => {
     book.isbn === isbn;
   });
-  selectedBook.reviews.push(review);
-  return res.status(200).json({ message: "review added" });
+  if (selectedBook) {
+    selectedBook.reviews.push(review);
+    return res.status(200).json({ message: "review added" });
+  } else {
+    return res.status(404).json({ message: "Book not found" });
+  }
 });
 
 export default regd_users;

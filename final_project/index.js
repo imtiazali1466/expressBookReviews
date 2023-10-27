@@ -19,19 +19,20 @@ app.use(
 
 app.use("/customer/auth", function auth(req, res, next) {
   //Write the authenication mechanism here
-if (req.session.authorization) {
-    let token = req.session.authorization["acessToken"]
-    jwt.verify(token, "secret", (err, user)=>{
-        if (!err) {
-            res.user = user
-            next()
-        } else {
-            res.status().json({message: "Authorization failed."})
-        }
-    })
-} else {
-    res.status().json({message: "User not logged in."})
-}
+  if (req.body["accessToken"]) {
+    let token = req.body["accessToken"];
+    jwt.verify(token, "secret", (err, user) => {
+      console.log("error :" + err);
+      if (!err) {
+        res.user = user;
+        next();
+      } else {
+        res.status(300).json({ message: "Authorization failed." });
+      }
+    });
+  } else {
+    res.status(401).json({ message: "User not logged in." });
+  }
 });
 
 const PORT = 5000;
